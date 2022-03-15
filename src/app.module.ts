@@ -1,10 +1,37 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppService } from './app.service';
+import { ArticleModule } from './modules/article/article.module';
+import { TagModule } from './modules/tag/tag.module';
+import { UserModule } from './modules/user/user.module';
+import { ConfigModule } from '@nestjs/config';
+import App_globalConfig from './config/configuration';
+import DatabaseConfig from './config/database';
 
 @Module({
-  imports: [],
-  controllers: [AppController],  // 这个就是哈 把 controller放在这个里面就好了 通过@Module 装饰器将元数据附加到模块类中 Nest 可以轻松反射（reflect）出哪些控制器（controller）必须被安装
-  providers: [AppService],  // 这个我们暂且不管
+  imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+      load: [App_globalConfig, DatabaseConfig],
+    }),
+    TypeOrmModule.forRoot({
+      type: 'mysql',
+      host: DatabaseConfig().host,
+      port: Number(DatabaseConfig().port),
+      username: DatabaseConfig().username,
+      password: DatabaseConfig().password,
+      database: DatabaseConfig().database,
+      entities: [__dirname + '/**/*.entity{.ts,.js}'], // 扫描本项目中.entity.ts或者.entity.js的文件
+      synchronize: true,
+    }),
+    UserModule,
+    TagModule,
+    ArticleModule,
+  ],
+  providers: [AppService],
 })
-export class AppModule {}
+export class AppModule {
+  constructor() {
+    console.log('value===>runtime', DatabaseConfig());
+  }
+}
