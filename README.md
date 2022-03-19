@@ -263,6 +263,7 @@ CREATE TABLE `node_blog`.`无标题`  (
 ```
 
 ### 如何做日志收集和记录
+<!-- 详细内容在 这里可以看到里面有很全面的教程， 我们是哟 log4j 把日志记录到本地文件中，后续运维可以通过这些日志的持久化读取出来 进行分析-->
 
 ### 封装统一的错我返回体和正常的返回体
 
@@ -287,3 +288,9 @@ CREATE TABLE `node_blog`.`无标题`  (
 ### 如何部署（构建自定义的CI）
 
 ## 如何使用Docker和Gitlab-CI做自动化（阶段3 部署和上线）
+
+```shell
+nest g mo /modules/cache
+nest g co /modules/cache  --no-spec
+nest g s /modules/cache --no-spec
+```

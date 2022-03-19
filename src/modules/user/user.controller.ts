@@ -7,12 +7,18 @@ import {
   Put,
   Delete,
   UsePipes,
+  UseInterceptors,
 } from '@nestjs/common';
+import { ApiBearerAuth, ApiHeader, ApiTags } from '@nestjs/swagger';
 import { UserInfoDTO } from 'src/dto/user.dto';
 import { User } from 'src/entities/user.entity';
+import { HttpReqTransformInterceptor } from 'src/filter/http-req.filter';
 import { ValidationPipe } from 'src/pipe/validation.pipe';
+import { AuthService } from '../auth/auth.service';
 import { UserService } from './user.service';
+@ApiTags('User相关')
 @Controller('user')
+@UseInterceptors(new HttpReqTransformInterceptor<any>()) // 统一返回体
 export class UserController {
   constructor(private readonly userService: UserService) {}
 

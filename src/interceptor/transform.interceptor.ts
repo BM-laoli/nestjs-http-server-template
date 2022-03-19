@@ -1,4 +1,4 @@
-// 拦截器
+// 全局 拦截器 用来收集日志
 import {
   CallHandler,
   ExecutionContext,

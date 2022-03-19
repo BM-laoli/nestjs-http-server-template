@@ -3,8 +3,9 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserInfoDTO } from 'src/dto/user.dto';
 import { User } from 'src/entities/user.entity';
+import { encryptPassword } from 'src/utils/crypt';
 import { getRepository, Repository } from 'typeorm';
-
+import { AuthService } from '../auth/auth.service';
 @Injectable()
 export class UserService {
   constructor(
@@ -86,6 +87,7 @@ export class UserService {
 
   create(user: UserInfoDTO) {
     // 对于mysql 来说是save mongodb也许说create
+    user.password = encryptPassword(user.password);
     return this.userRepository.save(user);
   }
 
@@ -95,5 +97,9 @@ export class UserService {
 
   deleteById(id: number) {
     return this.userRepository.delete(id);
+  }
+
+  async findOne(username: any) {
+    return this.userRepository.findOne({ username: username });
   }
 }

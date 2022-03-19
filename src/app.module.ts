@@ -1,15 +1,21 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ConfigModule } from '@nestjs/config';
+import { ScheduleModule } from '@nestjs/schedule';
+import App_globalConfig from './config/configuration';
+import DatabaseConfig from './config/database';
 import { AppService } from './app.service';
 import { ArticleModule } from './modules/article/article.module';
 import { TagModule } from './modules/tag/tag.module';
 import { UserModule } from './modules/user/user.module';
-import { ConfigModule } from '@nestjs/config';
-import App_globalConfig from './config/configuration';
-import DatabaseConfig from './config/database';
+import { AuthModule } from './modules/auth/auth.module';
+import { FilesModule } from './modules/files/files.module';
+import { JobModule } from './modules/job/job.module';
+import { CacheModule } from './modules/cache/cache.module';
 
 @Module({
   imports: [
+    ScheduleModule.forRoot(),
     ConfigModule.forRoot({
       isGlobal: true,
       load: [App_globalConfig, DatabaseConfig],
@@ -27,11 +33,11 @@ import DatabaseConfig from './config/database';
     UserModule,
     TagModule,
     ArticleModule,
+    AuthModule,
+    FilesModule,
+    JobModule,
+    CacheModule,
   ],
   providers: [AppService],
 })
-export class AppModule {
-  constructor() {
-    console.log('value===>runtime', DatabaseConfig());
-  }
-}
+export class AppModule {}
