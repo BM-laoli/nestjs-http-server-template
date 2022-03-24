@@ -675,6 +675,15 @@
   resolved "https://registry.npmmirror.com/@nestjs/mapped-types/-/mapped-types-1.0.1.tgz#78b62041c7a407db4a90eb140567321602bed18e"
   integrity sha512-NFvofzSinp00j5rzUd4tf+xi9od6383iY0JP7o0Bnu1fuItAUkWBgc4EKuIQ3D+c2QI3i9pG1kDWAeY27EMGtg==
 
+"@nestjs/microservices@^8.4.1":
+  version "8.4.1"
+  resolved "https://registry.npmmirror.com/@nestjs/microservices/-/microservices-8.4.1.tgz#cc73efb0ca434465c84b3c3b335145b4971b9ce8"
+  integrity sha512-w5T4DZJQNPhN/d/pdAO6bO1YUpAgiPfNmKwflaFtuyJzJjak+naOctx+3bc1eatrsbP+JEj6oCBVBuDIWHfcOQ==
+  dependencies:
+    iterare "1.2.1"
+    json-socket "0.3.0"
+    tslib "2.3.1"
+
 "@nestjs/passport@^8.2.1":
   version "8.2.1"
   resolved "https://registry.npmmirror.com/@nestjs/passport/-/passport-8.2.1.tgz#a2abff9f51b3857b3423f5380a00f475aa298fe7"
@@ -3989,6 +3998,11 @@ json-schema-traverse@^1.0.0:
   version "1.0.0"
   resolved "https://registry.npmmirror.com/json-schema-traverse/-/json-schema-traverse-1.0.0.tgz#ae7bcb3656ab77a73ba5c49bf654f38e6b6860e2"
   integrity sha512-NM8/P9n3XjXhIZn1lLhkFaACTOURQXjWhV4BA/RnOv8xvgqtqpAX9IO4mRQxSx1Rlo4tqzeqb0sOlruaOy3dug==
+
+json-socket@0.3.0:
+  version "0.3.0"
+  resolved "https://registry.npmmirror.com/json-socket/-/json-socket-0.3.0.tgz#f4b953c685bb8e8bd0b72438f5208d9a0799ae07"
+  integrity sha512-jc8ZbUnYIWdxERFWQKVgwSLkGSe+kyzvmYxwNaRgx/c8NNyuHes4UHnPM3LUrAFXUx1BhNJ94n1h/KCRlbvV0g==
 
 json-stable-stringify-without-jsonify@^1.0.1:
   version "1.0.1"

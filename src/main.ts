@@ -8,7 +8,6 @@ import { AllExceptionsFilter } from './filter/any-exception.filter';
 import { HttpExceptionFilter } from './filter/http-exception.filter';
 import { TransformInterceptor } from './interceptor/transform.interceptor';
 import { logger } from './middleware/logger.middleware';
-import * as fs from 'fs';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
