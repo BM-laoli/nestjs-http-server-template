@@ -24,10 +24,10 @@ export class FilesController {
   oss: OSS;
   constructor(private readonly httpService: HttpService) {
     this.oss = new OSS({
-      region: 'oss-cn-beijing',
-      accessKeyId: 'LTAI5tB37443ww8CfmnbeEPo',
-      accessKeySecret: '4WC4WoZtQdi7BqFXq1i9Vmpuwf7GS8',
-      bucket: 'joneysli',
+      region: 'oss-cn-beijing',//下面的值需要你自己去获取
+      accessKeyId: '',
+      accessKeySecret: '',
+      bucket: '',
     });
   }
 
