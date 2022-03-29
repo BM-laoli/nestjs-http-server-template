@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Cron, CronExpression } from '@nestjs/schedule';
+import { Cron, CronExpression, Interval, Timeout } from '@nestjs/schedule';
 import * as fs from 'fs';
 import { join } from 'path';
 
@@ -35,5 +35,14 @@ export class JobService {
     this.emptyDir(accesslogDir);
     this.emptyDir(appOutDir);
     this.emptyDir(errorsDir);
+  }
+
+  // 手动运行
+  // @Cron('10 * * * * *', {
+  //   name: 'notifications',
+  // })
+  @Interval('notifications', 5000)
+  handleTimeout() {
+    console.log('66666');
   }
 }

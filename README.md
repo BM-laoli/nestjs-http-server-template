@@ -294,3 +294,29 @@ nest g mo /modules/cache
 nest g co /modules/cache  --no-spec
 nest g s /modules/cache --no-spec
 ```
+
+# 配置管理
+
+# 日志收集和记录（中间价、 拦截器）
+
+# 异常过滤（拦截器）
+
+# 请求参数校验 （Dto）
+
+# jwt验证方案
+
+# 统一返回体定义
+
+# 上传文件
+
+# 请求转发
+
+# 定时Job
+
+# 上swagger
+
+# 利用redis做单点登录
+
+# 如何做微服务？通信架构如何设计？
+
+# Nest到底咋运行的？

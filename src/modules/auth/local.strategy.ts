@@ -15,7 +15,12 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
     console.log('你要调用我哈------------');
     const user = await this.authService.validateUser(username, password);
     if (!user) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException({
+        code: 401,
+        message: '权限验证失败',
+        data: null,
+        success: false,
+      });
     }
     return user;
   }

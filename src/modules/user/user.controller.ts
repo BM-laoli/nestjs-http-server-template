@@ -13,7 +13,7 @@ import {
 import { ApiBearerAuth, ApiHeader, ApiTags } from '@nestjs/swagger';
 import { UserInfoDTO } from 'src/dto/user.dto';
 import { User } from 'src/entities/user.entity';
-import { HttpReqTransformInterceptor } from 'src/filter/http-req.filter';
+import { HttpReqTransformInterceptor } from 'src/interceptor/http-req.interceptor';
 import { ValidationPipe } from 'src/pipe/validation.pipe';
 import { AuthService } from '../auth/auth.service';
 import { UserService } from './user.service';

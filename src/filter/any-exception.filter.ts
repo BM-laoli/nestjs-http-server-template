@@ -13,7 +13,7 @@ import { Logger } from '../utils/log4js';
 
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {
-  catch(exception: unknown, host: ArgumentsHost) {
+  catch(exception: any, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse();
     const request = ctx.getRequest();
@@ -32,8 +32,10 @@ export class AllExceptionsFilter implements ExceptionFilter {
     `;
     Logger.error(logFormat);
     response.status(status).json({
-      statusCode: status,
-      msg: `Service Error: ${exception}`,
+      code: status,
+      message: exception.message,
+      data: null,
+      success: false,
     });
   }
 }

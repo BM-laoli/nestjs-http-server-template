@@ -5,6 +5,7 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { jwtConstants } from './constants';
 import { Request } from 'express';
 import { CacheService } from '../cache/cache.service';
+import { debug } from 'console';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -19,8 +20,9 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
   // JWT验证 - Step 4: 被守卫调用
   async validate(req: Request, payload: any) {
+    //  注意 只有通过前面默认的加密验证之后才能进入
+    console.log('JWT');
     const originToken = ExtractJwt.fromAuthHeaderAsBearerToken()(req);
-
     // 只有验证通过之后才会来到这里
     // console.log(`JWT验证 - Step 4: 被守卫调用`);
     const cacheToken = await this.CacheService.get(
