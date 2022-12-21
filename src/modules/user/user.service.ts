@@ -4,8 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { UserInfoDTO } from 'src/dto/user.dto';
 import { User } from 'src/entities/user.entity';
 import { encryptPassword } from 'src/utils/crypt';
-import { getRepository, Repository } from 'typeorm';
-import { AuthService } from '../auth/auth.service';
+import { Repository } from 'typeorm';
 @Injectable()
 export class UserService {
   constructor(

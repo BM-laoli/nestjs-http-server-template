@@ -175,10 +175,16 @@ user 表
 
 有了这份数据库的设计，我们开始做来搞这个数据库, 我在这儿放了个SQL，当然如果你使用可视化的操作工具还是可以的 🔧
 
+创建库
+
+```sql
+ CREATE DATABASE node_blog;
+```
+
 首先是生产user的
 
 ```sql
-CREATE TABLE `node_blog`.`无标题`  (
+CREATE TABLE `node_blog`.`user`  (
   `username` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL COMMENT '用户名',
   `create_time` int NULL DEFAULT NULL COMMENT '创建时间',
   `update_time` int NULL DEFAULT NULL COMMENT '修改时间',
@@ -193,7 +199,7 @@ CREATE TABLE `node_blog`.`无标题`  (
 然后是生产tag的
 
 ```sql
-CREATE TABLE `node_blog`.`无标题`  (
+CREATE TABLE `node_blog`.`tag`  (
   `id` int UNSIGNED NOT NULL AUTO_INCREMENT,
   `name` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL COMMENT '标签名',
   `create_time` int NULL DEFAULT NULL COMMENT '创建时间',
@@ -207,10 +213,10 @@ CREATE TABLE `node_blog`.`无标题`  (
 
 ```
 
-最后是生产article
+最后是生产 article
 
 ```sql
-CREATE TABLE `node_blog`.`无标题`  (
+CREATE TABLE `node_blog`.`article`  (
   `id` int UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'id',
   `title` varchar(100) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL COMMENT '标题',
   `create_time` int NULL DEFAULT NULL COMMENT '创建时间',
@@ -320,3 +326,18 @@ nest g s /modules/cache --no-spec
 # 如何做微服务？通信架构如何设计？
 
 # Nest到底咋运行的？
+
+# 仓库说明
+
+## 分支说明
+
+## 更新说明
+
+1. 聚合一些业务无关的通用模块
+2. 加入 validate 的验证器
+3. 加入zk 简化启动和代码中写死的配置
+4. 加入一个装饰器 专门用来读取zk配置
+
+### 聚合
+
+> 我们把一些 通用的模块，与业务无关的模块给聚合起来 到core中，方便以后的复用逻辑

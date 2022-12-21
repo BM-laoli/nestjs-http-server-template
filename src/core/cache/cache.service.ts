@@ -1,23 +1,13 @@
 import { Injectable } from '@nestjs/common';
-import RedisC, { Redis } from 'ioredis';
-
+import { InjectRedis, DEFAULT_REDIS_NAMESPACE } from '@liaoliaots/nestjs-redis';
+import Redis from 'ioredis';
+// 封装我们使用的 redis 可以更方便管理
 @Injectable()
-// 目前的版本比较的简单 只是一个设置值清除值，在启动微服务之后，这个地方就不是这样写了
 export class CacheService {
-  redisClient: Redis;
-
-  // 先做一个最简易的版本，只生产一个 链接实例
-  constructor() {
-    this.redisClient = new RedisC({
-      port: 6379, // Redis port
-      host: '192.168.101.10', // Redis host
-      family: 4, // 4 (IPv4) or 6 (IPv6)
-      password: '',
-      db: 0,
-    });
-  }
-
-  // 编写几个设置redis的便捷方法
+  constructor(
+    @InjectRedis(DEFAULT_REDIS_NAMESPACE)
+    private readonly redis: Redis,
+  ) {}
 
   /**
    * @Description: 封装设置redis缓存的方法
@@ -29,9 +19,9 @@ export class CacheService {
   public async set(key: string, value: any, seconds?: number): Promise<any> {
     value = JSON.stringify(value);
     if (!seconds) {
-      await this.redisClient.set(key, value);
+      await this.redis.set(key, value);
     } else {
-      await this.redisClient.set(key, value, 'EX', seconds);
+      await this.redis.set(key, value, 'EX', seconds);
     }
   }
 
@@ -40,7 +30,7 @@ export class CacheService {
    * @param key {String}
    */
   public async get(key: string): Promise<any> {
-    const data = await this.redisClient.get(key);
+    const data = await this.redis.get(key);
     if (data) return data;
     return null;
   }
@@ -51,7 +41,7 @@ export class CacheService {
    * @return:
    */
   public async del(key: string): Promise<any> {
-    return await this.redisClient.del(key);
+    return await this.redis.del(key);
   }
 
   /**
@@ -60,6 +50,6 @@ export class CacheService {
    * @return:
    */
   public async flushall(): Promise<any> {
-    return await this.redisClient.flushall();
+    return await this.redis.flushall();
   }
 }

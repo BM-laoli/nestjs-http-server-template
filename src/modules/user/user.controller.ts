@@ -10,15 +10,13 @@ import {
   UseInterceptors,
   Inject,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiHeader, ApiTags } from '@nestjs/swagger';
+import { ApiTags } from '@nestjs/swagger';
 import { UserInfoDTO } from 'src/dto/user.dto';
 import { User } from 'src/entities/user.entity';
 import { HttpReqTransformInterceptor } from 'src/interceptor/http-req.interceptor';
 import { ValidationPipe } from 'src/pipe/validation.pipe';
-import { AuthService } from '../auth/auth.service';
 import { UserService } from './user.service';
 import { ClientProxy } from '@nestjs/microservices';
-import Rx, { observable, pipe, of } from 'rxjs';
 @ApiTags('User相关')
 @Controller('user')
 @UseInterceptors(new HttpReqTransformInterceptor<any>()) // 统一返回体

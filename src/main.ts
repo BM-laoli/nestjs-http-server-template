@@ -23,7 +23,6 @@ async function bootstrap() {
   // 错误异常捕获 和 过滤处理
   app.useGlobalFilters(new AllExceptionsFilter());
   app.useGlobalFilters(new HttpExceptionFilter()); // 全局统一异常返回体
-
   // 配置文件访问  文件夹为静态目录，以达到可直接访问下面文件的目的
   const rootDir = join(__dirname, '..');
   app.use('/static', express.static(join(rootDir, '/upload')));

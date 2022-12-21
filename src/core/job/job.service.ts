@@ -43,6 +43,6 @@ export class JobService {
   // })
   @Interval('notifications', 5000)
   handleTimeout() {
-    console.log('66666');
+    // console.log('66666');
   }
 }

@@ -5,9 +5,7 @@ import { MulterModule } from '@nestjs/platform-express';
 import { randomUUID } from 'crypto';
 import { diskStorage } from 'multer';
 import { join } from 'path';
-import { cwd } from 'process';
 import { FilesController } from './files.controller';
-import { FilesService } from './files.service';
 
 @Module({
   imports: [
@@ -17,8 +15,8 @@ import { FilesService } from './files.service';
       maxRedirects: 5,
     }),
     MulterModule.registerAsync({
-      imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
+        // ??
         storage: diskStorage({
           destination: join(__dirname, '../../../', '/upload'),
           filename: (req, file, cb) => {
@@ -31,6 +29,5 @@ import { FilesService } from './files.service';
     }),
   ],
   controllers: [FilesController],
-  providers: [FilesService],
 })
 export class FilesModule {}

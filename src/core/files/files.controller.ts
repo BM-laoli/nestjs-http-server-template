@@ -4,31 +4,27 @@ import {
   Controller,
   Get,
   Post,
-  Render,
   UploadedFile,
   UploadedFiles,
   UseInterceptors,
-  Req,
-  Res,
   Param,
 } from '@nestjs/common';
-import { Request } from 'express';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import * as OSS from 'ali-oss';
-import multer, { diskStorage } from 'multer';
-import path, { join, normalize } from 'path';
 import { randomUUID } from 'crypto';
+import { diskStorage } from 'multer';
+import { join, normalize } from 'path';
 
 @Controller('files')
 export class FilesController {
   oss: OSS;
   constructor(private readonly httpService: HttpService) {
-    this.oss = new OSS({
-      region: 'oss-cn-beijing',//下面的值需要你自己去获取
-      accessKeyId: '',
-      accessKeySecret: '',
-      bucket: '',
-    });
+    // this.oss = new OSS({
+    //   region: 'oss-cn-beijing',//下面的值需要你自己去获取
+    //   accessKeyId: '',
+    //   accessKeySecret: '',
+    //   bucket: '',
+    // });
   }
 
   @UseInterceptors(FileInterceptor('file'))
