@@ -164,8 +164,107 @@ nestjs 编译出来之后 实际上是默认生产 sourcemap的，那么这就�
  node --enable-source-maps ./dist/main.js
 ```
 
-2. log记录器 同样可以记录到
+2. ExceptionFilter 同样可以记录到
+
+```ts
+@Catch()
+export class AllExceptionsFilter implements ExceptionFilter {
+  catch(exception: any, host: ArgumentsHost) {
+    const ctx = host.switchToHttp();
+    const response = ctx.getResponse();
+    const request = ctx.getRequest();
+
+    console.log('--->', exception.stack);
+
+    const status =
+      exception instanceof HttpException
+        ? exception.getStatus()
+        : HttpStatus.INTERNAL_SERVER_ERROR;
+
+    response.status(status).json({
+      statusCode: status,
+      timestamp: new Date().toISOString(),
+      path: request.url,
+    });
+  }
+}
+```
+
+**特别提醒: 考虑到安全问题，建议你对stack的路径信息进行屏蔽**
 
 ## 深入一下 自定义的 装饰器
 >
 > 一般和拦截器/中间价 结合起来使用
+> 我在这篇文章中 以及举例了一个非常具体的 SSR 例子，供你参考 这里就不多说了，(它使用的是自定义装饰器+拦截器实现的)
+
+1. 我们再来看看 mock 一个RBAC权限 tools (使用自定义装饰器+守卫实现)
+
+- 先定义一个 装饰器 设置几个元数据到指定的路由上去
+
+```ts
+// src/core/constants/RBAC
+export enum Role {
+  User = 2,
+  Admin = 1,
+}
+
+// src/core/rbac.decorator
+import { SetMetadata } from '@nestjs/common';
+import { Role } from '../constants/RBAC';
+
+export const ROLES_KEY = 'roles';
+
+// 装饰器Roles SetMetadata将装饰器的值缓存
+export const Roles = (...roles: Role[]) => SetMetadata(ROLES_KEY, roles);
+
+```
+
+- 然后在守卫中 做逻辑处理
+
+```ts
+import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
+import { Reflector } from '@nestjs/core';
+import { Role } from '../constants/RBAC';
+import { ROLES_KEY } from '../decorator/rbac.decorator';
+
+@Injectable()
+export class RoleGuard implements CanActivate {
+  constructor(private reflector: Reflector) {}
+
+  async canActivate(context: ExecutionContext): Promise<boolean> {
+    // 1.通过反射获取到装饰器的权限
+    // getAllAndOverride读取路由上的metadata getAllAndMerge合并路由上的metadata
+    const requireRoles = this.reflector.getAllAndOverride<Role[]>(ROLES_KEY, [
+      context.getHandler(),
+      context.getClass(),
+    ]);
+
+    console.log('requireRoles info', requireRoles);
+
+    // 2.获取req拿到鉴权后的用户数据
+    const req = context.switchToHttp().getRequest();
+
+    // // 3.通过用户数据从数据查询权限
+    const user = await Promise.resolve({ roles: [{ id: 1, text: 'admin' }] });
+    const roleIds = user.roles.map((item) => item.id);
+
+    // 4.判断用户权限是否为装饰器的权限 的some返回boolean
+    const flag = requireRoles.some((role) => roleIds.includes(role));
+
+    return flag;
+  }
+}
+```
+
+- 最后就是在指定的路由上处理  
+
+```ts
+// 用在 整体的controller中 也可以用到具体的路由上 
+@Controller('cats')
+@Roles(Role.Admin) // 仅限ADMIN 可以访问
+@UseGuards(RolesGuard, RoleGuard)
+@UseInterceptors(LoggingInterceptor)
+export class AppController {
+  ++++
+}
+```

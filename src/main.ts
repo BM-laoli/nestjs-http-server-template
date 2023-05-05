@@ -1,6 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { AppModule } from './app.module';
+import { AllExceptionsFilter } from './core/filter/http-excepition.filer';
 import { RolesGuard2 } from './core/guard/roles2.guard';
 import { loggerAll } from './core/middleware/m4-fnAll.middleware';
 
@@ -9,6 +10,7 @@ async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
   app.use(loggerAll);
   app.useGlobalGuards(new RolesGuard2());
+  app.useGlobalFilters(new AllExceptionsFilter());
   await app.listen(3000);
 }
 bootstrap();

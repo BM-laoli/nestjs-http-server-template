@@ -19,9 +19,13 @@ import { Request, Response } from 'express';
 import { RolesGuard } from './core/guard/roles.guard';
 import { RolesGuard3 } from './core/guard/roles3.guard';
 import { LoggingInterceptor } from './core/interceptor/logging.interceptor';
+import { Roles } from './core/decorator/rbac.decorator';
+import { Role } from './core/constants/RBAC';
+import { RoleGuard } from './core/guard/rbac.guard';
 // @Controller()
 @Controller('cats')
-@UseGuards(RolesGuard)
+@Roles(Role.Admin) // 仅限ADMIN 可以访问
+@UseGuards(RolesGuard, RoleGuard)
 @UseInterceptors(LoggingInterceptor)
 export class AppController {
   constructor(private readonly appService: AppService) {}
@@ -30,9 +34,9 @@ export class AppController {
   @UseGuards(RolesGuard3)
   getHello(): string {
     console.log('getHello');
-    throw new Error('errro');
+    // throw new Error('errro');
 
-    // return this.appService.getHello();
+    return this.appService.getHello();
   }
 
   // 基础路由
