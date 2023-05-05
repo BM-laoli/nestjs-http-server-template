@@ -182,6 +182,69 @@ export class ConfigService {
 
 比如我封装 一个zk （请移步到这里 <https://juejin.cn/post/7179577349279744057#heading-3> ）
 
+简单的来说就是 使用 动态模块的特性 把需要用到的service 当做/不当做 参数传递进去，进行一部异步/同步 的初始化
+
+以上的内容在中文文档中说的没有这么详细，请看 原英语文档 <a href="https://docs.nestjs.com/fundamentals/dynamic-modules#custom-options-factory-class">Nest9 英语文档</a>
+
+上面的 zk 封装 并不是非常的完美，完美可以去看看 另一个开源模块 的源码用以学习
+<a href="https://github.com/liaoliaots/nestjs-redis/blob/main/packages/redis/lib/redis/redis.providers.ts">nestjs-redis源码</a>
+<a href="https://github.com/apachecn/logrocket-blog-zh/blob/73cfca092085c96494fbe91cb588f1d5254f0c63/docs/use-configurable-module-builders-nest-js-v9.md">NestV9版本如何自定义模块</a>
+
+重点说一下 V9 的写法
+
+```ts
+// ConfigurableModuleBuilder 返回了一些特定的 令牌 和 class ，让我们定义动态模块的时候 更加简单
+
+// 1、我们希望可以完成这样的 样板代码
+import { EnvProxyModule } from './env-proxy-module/env-proxy.module';
+@Module({
+  imports: [ApiModule, EnvProxyModule.registerAsync({
+    useFactory: async () => {
+      return {
+        exclude: [
+          "DATA"
+        ]
+      }
+    }
+  })],
+})
+export class AppModule {}
+
+// EnvProxyModule 功能就去获取 .env 上变量
+
+// 2. 返回 一个builder env-proxy.definition.ts
+import { ConfigurableModuleBuilder } from '@nestjs/common';
+export interface EnvProxyModuleOptions {
+  exclude: string[];
+}
+export const { ConfigurableModuleClass, MODULE_OPTIONS_TOKEN } =
+  new ConfigurableModuleBuilder<EnvProxyModuleOptions>({
+    moduleName: 'EnvProxy',
+  })
+    .build();
+
+// 3. 实现 EnvProxy
+@Global()
+@Module({
+  providers: [EnvProxyService],
+  exports: [EnvProxyService],
+})
+export class EnvProxyModule extends ConfigurableModuleClass {}
+
+@Injectable()
+export class EnvProxyService {
+  public readonly env: NodeJS.ProcessEnv;
+  constructor(@Inject(MODULE_OPTIONS_TOKEN) private options: EnvProxyModuleOptions) {
+    this.env = process.env;
+    options.exclude.forEach(val => {
+      delete this.env[val];
+    });
+  }
+}
+```
+
+哇 这代码相比原来的，要简洁不少
+
 ### 注入作用域
 
 ### 循环依赖
