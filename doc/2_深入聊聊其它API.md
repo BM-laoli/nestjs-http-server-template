@@ -639,6 +639,10 @@ const roles = this.reflector.getAllAndMerge<string[]>('roles', [
 >
 > 关于测试 ，单元测试，E2E 测试 Nest 都有完整的方案
 
+#### 简单单元测试
+>
+> 重点是模块内 的测试
+
 1. 按照 测试工具 包（它底层依赖Jest
 
 ```shell
@@ -651,43 +655,131 @@ npm i --save-dev @nestjs/testing
 
 ```ts
 import { Test } from '@nestjs/testing';
-import { CatsController } from './cats.controller';
-import { CatsService } from './cats.service';
+import { CarController } from './car/car.controller';
+import { CarService } from './car/car.service';
 
-describe('CatsController', () => {
-  let catsController: CatsController;
-  let catsService: CatsService;
+describe('CarController', () => {
+  let catsController: CarController;
+  let catsService: CarService;
 
   beforeEach(async () => {
     const moduleRef = await Test.createTestingModule({
-        controllers: [CatsController],
-        providers: [CatsService],
-      }).compile();
+      controllers: [CarController],
+      providers: [CarService],
+    }).compile();
 
-    catsService = moduleRef.get<CatsService>(CatsService);
-    catsController = moduleRef.get<CatsController>(CatsController);
+    // compile
+    // 这个方法初始化一个模块和它的依赖(和传统应用中从main.ts文件使用NestFactory.create()方法类似)，并返回一个准备用于测试的模块。
+
+    catsService = await moduleRef.resolve(CarService);
+    catsController = await moduleRef.resolve(CarController);
   });
 
   describe('findAll', () => {
     it('should return an array of cats', async () => {
-      const result = ['test'];
+      const result = 'findAll';
       jest.spyOn(catsService, 'findAll').mockImplementation(() => result);
 
-      expect(await catsController.findAll()).toBe(result);
+      const value = await catsController.findAll();
+      console.log(value);
+
+      expect(value).toBe(result);
     });
   });
 });
+```
 
-// Test类提供应用上下文以模拟整个Nest运行时
-// compile()方法是异步的，因此必须等待执行完成。一旦模块编译完成，您可以使用 get() 方法获取任何声明的静态实例(控制器和提供者)。
-// TestingModule继承自module reference类
-const moduleRef = await Test.createTestingModule({
-  controllers: [CatsController],
-  providers: [CatsService],
-}).compile();
+#### 端到端测试 E2E
 
-catsService = await moduleRef.resolve(CatsService);
+```ts
+import * as request from 'supertest';
+import { Test } from '@nestjs/testing';
+import { INestApplication } from '@nestjs/common';
+import { CarModule } from '../src/car/car.module';
+import { CarService } from '../src/car/car.service';
+
+describe('Car', () => {
+  let app: INestApplication;
+  const carService = { findAll: () => 'findAll' };
+  // const carService = new CarService();
+  // 我们也提供了一个可选的CatsService(test-double)应用，它返回一个硬编码值供我们测试。使用overrideProvider()来进行覆盖替换。类似地，Nest也提供了覆盖守卫，拦截器，过滤器和管道的方法：overrideGuard(), overrideInterceptor(), overrideFilter(), overridePipe()。
+
+  beforeAll(async () => {
+    const moduleRef = await Test.createTestingModule({
+      imports: [CarModule],
+    })
+      .overrideProvider(CarService)
+      .useValue(carService)
+// useClass: 提供一个类来覆盖对象(提供者，守卫等)。
+// useValue: 提供一个实例来覆盖对象。
+// useFactory: 提供一个方法来返回覆盖对象的实例。
+      .compile();
+
+    app = moduleRef.createNestApplication();
+    // createNestApplication()方法来实例化一个Nest运行环境。我们在app变量中储存了一个app引用以便模拟HTTP请求。
+    await app.init();
+  });
+
+  it(`/GET findAll`, () => {
+    return request(app.getHttpServer())
+      .get('/car/findAll')
+      //  模拟请求 app.getHttpServer
+      .expect(200)
+      .expect(carService.findAll());
+  });
+
+  afterAll(async () => {
+    await app.close();
+  });
+});
 
 ```
+
+上述的app 编译完成之后 具备下面的一些方法
+| method | des |
+|----|----|
+| createNestInstance() | 基于给定模块创建一个Nest实例（返回INestApplication）,请注意，必须使用init()方法手动初始化应用程序  |
+| createNestMicroservice() | 基于给定模块创建Nest微服务实例（返回INestMicroservice）  |
+| get() | 从module reference类继承，检索应用程序上下文中可用的控制器或提供程序（包括警卫，过滤器等）的实例  |
+| resolve() | 从module reference类继承，检索应用程序上下文中控制器或提供者动态创建的范围实例（包括警卫，过滤器等）的实例  |
+| select() | 浏览模块树，从所选模块中提取特定实例（与get()方法中严格模式{strict：true}一起使用)  |
+
+注册一个全局的模块/让全局的一些provider 公用，而不需要我们单独的每个测试文件都添加 比如JwtAuthGuard
+
+```ts
+// AppModule 中改一下
+providers: [
+  {
+    provide: APP_GUARD,
+    useExisting: JwtAuthGuard,
+  },
+  JwtAuthGuard,
+],
+// 将useClass修改为useExisting来引用注册提供者，而不是在令牌之后使用Nest实例化。
+
+const moduleRef = await Test.createTestingModule({
+  imports: [AppModule],
+})
+  .overrideProvider(JwtAuthGuard)
+  .useClass(MockAuthGuard)
+  .compile();
+  // 这样测试就会在每个请求中使用MockAuthGuard。
+```
+
+还有一个细节
+请求范围提供者针对每个请求创建。其实例在请求处理完成后由垃圾回收机制销毁。这产生了一个问题，因为我们无法针对一个测试请求获取其注入依赖子树。
+
+```ts
+const contextId = ContextIdFactory.create();
+jest
+  .spyOn(ContextIdFactory, 'getByRequest')
+  .mockImplementation(() => contextId);
+  
+catsService = await moduleRef.resolve(CatsService, contextId);
+
+```
+
+>
+> 这个是最符合 实际生产要求的 测试方式  我们使用supertest 来模拟http
 
 ## 其它API和协同
