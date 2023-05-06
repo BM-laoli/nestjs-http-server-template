@@ -5,6 +5,8 @@ import {
   Header,
   HttpCode,
   HttpStatus,
+  Inject,
+  Injectable,
   Param,
   Post,
   Query,
@@ -22,21 +24,34 @@ import { LoggingInterceptor } from './core/interceptor/logging.interceptor';
 import { Roles } from './core/decorator/rbac.decorator';
 import { Role } from './core/constants/RBAC';
 import { RoleGuard } from './core/guard/rbac.guard';
+import { RequestLogger } from './core/testScope/testScope';
 // @Controller()
 @Controller('cats')
 @Roles(Role.Admin) // 仅限ADMIN 可以访问
 @UseGuards(RolesGuard, RoleGuard)
 @UseInterceptors(LoggingInterceptor)
 export class AppController {
-  constructor(private readonly appService: AppService) {}
+  private readonly userName;
+  constructor(
+    private readonly appService: AppService, // private readonly scopeLog: RequestLogger,
+  ) {
+    this.userName = 'AppController userName 666';
+  }
 
   @Get()
   @UseGuards(RolesGuard3)
-  getHello(): string {
+  getHello(@Inject(RequestLogger) scopeLog: RequestLogger): string {
     console.log('getHello');
     // throw new Error('errro');
+    // console.log(this);
+    // this.scopeLog.log('222');
+    // scopeLog.log('22'); // 这个地方一定是 undefined 的！
 
     return this.appService.getHello();
+  }
+
+  getUserName() {
+    return this.userName;
   }
 
   // 基础路由
