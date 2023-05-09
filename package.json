@@ -21,10 +21,12 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
+    "@nestjs/bull": "^0.6.3",
     "@nestjs/common": "^8.0.0",
     "@nestjs/core": "^8.0.0",
     "@nestjs/mongoose": "^9.2.2",
     "@nestjs/platform-express": "^8.0.0",
+    "bull": "^4.10.4",
     "cache-manager": "4.1.0",
     "cache-manager-redis-store": "2.0.0",
     "class-transformer": "^0.5.1",

@@ -1,5 +1,6 @@
 import { CacheModule, Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
+import { BullModule } from '@nestjs/bull';
 @Module({
   imports: [
     MongooseModule.forRoot('mongodb://admin:123456@127.0.0.1:27017/testDB', {
