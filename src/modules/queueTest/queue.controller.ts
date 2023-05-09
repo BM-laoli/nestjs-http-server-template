@@ -14,10 +14,7 @@ export class QueueController {
   // 任务表现为序列化的JavaScript对象（因为它们被存储在 Redis 数据库中）
   async startAudioQueue() {
     // 注意任务有许多可选项配置 详见下文文档
-    // const job = await this.audioQueue.add('transcode', {
-    //   foo: 'bar',
-    // });
-    const job = await this.audioQueue.add({
+    const job = await this.audioQueue.add('transcode', {
       foo: 'bar',
     });
 

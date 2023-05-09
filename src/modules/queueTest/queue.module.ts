@@ -8,12 +8,14 @@ import { AudioConsumer } from './audio.consumer';
 @Module({
   imports: [
     // 注册队列 名为audio 它有很多属性，请参考源代码中的 注释
+    BullModule.forRoot({
+      redis: {
+        host: 'localhost',
+        port: 6379,
+      },
+    }),
     BullModule.registerQueue({
       name: 'audio',
-      redis: {
-        host: 'redis://127.0.0.1',
-        port: 6380,
-      },
     }),
   ],
   controllers: [QueueController],

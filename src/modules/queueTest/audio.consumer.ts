@@ -3,7 +3,6 @@ import {
   Process,
   OnQueueActive,
   OnGlobalQueueCompleted,
-  OnQueueCleaned,
   OnQueueCompleted,
 } from '@nestjs/bull';
 import { Job } from 'bull';
@@ -23,11 +22,12 @@ export class AudioConsumer {
       job.progress(progress);
       // progress 用来更新 job进程
     }
-    return {};
+    return progress;
+    // 它返回一个 数据JS object
   }
 
   // 监听者1 Active时监听 注意有许多种类型的状态监听 而且还会区分 全局（分布式/ 本地的 两类
-  @OnQueueActive()
+  @OnQueueActive({ name: 'transcode' })
   onActive(job: Job) {
     log('5555');
     console.log(
@@ -40,7 +40,7 @@ export class AudioConsumer {
     name: 'transcode',
   })
   async onQueueCompleted(jobId: number, result: any) {
-    // const job = await this.immediateQueue.getJob(jobId);
+    // const job = await this.que.getJob(jobId);
     await this.mockJob(6000);
     console.log('(Global) on completed: job ', jobId, ' -> result: ', result);
   }
