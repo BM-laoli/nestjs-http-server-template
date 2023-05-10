@@ -11,6 +11,8 @@ import { SerializationModule } from './modules/serializationTest/serialization.m
 import { QueueModule } from './modules/queueTest/queue.module';
 import { FileModule } from './modules/fileTest/file.module';
 import { CookieSessionModule } from './modules/cookieSessionTest/cookieSession.module';
+import { PageModule } from './modules/pages/page.module';
+import { CASLModule } from './modules/casl/casl.module';
 
 @Module({
   imports: [
@@ -22,6 +24,8 @@ import { CookieSessionModule } from './modules/cookieSessionTest/cookieSession.m
     QueueModule,
     FileModule,
     CookieSessionModule,
+    PageModule,
+    CASLModule,
   ],
   controllers: [AppController],
   providers: [AppService],

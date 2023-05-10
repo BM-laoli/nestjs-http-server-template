@@ -1,9 +1,10 @@
-import { Controller, Get, Req, Res } from '@nestjs/common';
+import { Controller, Get, Req, Res, Session } from '@nestjs/common';
 import { Request, Response } from 'express';
-import * as crypto from 'crypto';
 import { Cookies } from './decorator/cookie.decorator';
+import { log } from 'console';
 
-export const cookieSecret = 'joney_';
+export const cookieSecret = 'joney_cookie';
+export const seesionSecret = 'joney_session';
 @Controller('cookieSession')
 export class CookieSessionController {
   @Get('t1')
@@ -37,5 +38,17 @@ export class CookieSessionController {
   @Get('t3')
   t3(@Cookies('joney') val: any) {
     console.log(val);
+  }
+
+  @Get('t4')
+  t4(@Req() request: Request) {
+    log(request.session);
+    return 0;
+  }
+
+  @Get('t5')
+  t5(@Session() session: Record<string, any>) {
+    log(session);
+    return 0;
   }
 }
