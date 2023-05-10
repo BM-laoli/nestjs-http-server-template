@@ -39,4 +39,10 @@ export class PageController {
   renderMessage() {
     return {};
   }
+
+  @Get('message2')
+  @Render('message2')
+  renderMessage2() {
+    return {};
+  }
 }

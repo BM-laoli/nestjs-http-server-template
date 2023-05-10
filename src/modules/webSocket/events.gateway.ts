@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import { UseFilters, UsePipes, ValidationPipe } from '@nestjs/common';
 import {
   MessageBody,
@@ -6,19 +7,22 @@ import {
   WebSocketServer,
   ConnectedSocket,
   WsException,
+  WsResponse,
 } from '@nestjs/websockets';
 import { log } from 'console';
-import { Socket } from 'dgram';
 import { from, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { Server } from 'socket.io';
+import { Server, Socket } from 'socket.io';
 import { AllExceptionsFilterWithWs } from './filter/allExceptions.filter';
 import { TestDto } from './dto/test.dto';
 
 // 默认可以WebSocketGateway(80,options) 这个port 可指定若不指定就是 同样的port 监听
 @WebSocketGateway({
+  transports: ['websocket'],
   cors: {
     origin: '*',
+    methods: ['GET', 'POST'],
+    credentials: true,
   },
 })
 export class EventsGateway {
@@ -32,15 +36,22 @@ export class EventsGateway {
     @MessageBody() data: any,
     @ConnectedSocket() client: Socket,
   ): any {
-    // client.emit('events', { ...data, message: 'Servier return you ' });
-    // return data  请不要用return 请看这个 issues https://github.com/nestjs/nest/issues/11439
+    const sendData = { ...data, message: 'Servier return you ' };
+    // 1 -------- 如果你使用的是 nest 默认提供的 socket
+    // return 不会有效 请看 issues https://github.com/nestjs/nest/issues/11439
+    // 处理办法 emit
+    // client.emit('message', sendData);
+    // from([1, 2, 3, 4])
+    //   .pipe(map((data) => data))
+    //   .subscribe((res) => {
+    //     client.emit('events', res);
+    //   });
 
-    // 如果你是 异步 的也可以支持 狐疑 from 是连发Array Item 哈，详见RXJS 更多的也请 参考RXJS
-    from([1, 2, 3, 4])
-      .pipe(map((data) => data))
-      .subscribe((res) => {
-        client.emit('events', { data: res, message: 'Servier return you ' });
-      });
+    // 2 -------- 如果你import { WsAdapter } from '@nestjs/platform-ws';
+    //  return 是有效的，且不是emit 而是send string!
+    // 另外 返回的数据只有一段string 如果需要实现 nameSpace 需要自己去整 socket.io 则要简单些
+    client.send(JSON.stringify(sendData));
+    // return JSON.stringify(sendData)
   }
 
   @SubscribeMessage('identity')
@@ -53,7 +64,7 @@ export class EventsGateway {
     log('OnGatewayInit');
   }
 
-  handleConnection() {
+  handleConnection(client: any) {
     log('OnGatewayConnection');
   }
 
@@ -82,6 +93,26 @@ export class EventsGateway {
   // Guards 和普通的一样(不演示了) 建议为 ws 自定义一个 Guards 让它 抛出 非HttpException
   // Interceptor 和普通的一样(不演示了) 建议为 ws 自定义一个 Interceptor 让它 抛出 非HttpException
 
-  // 适配器adapter
-  //
+  // 适配器adapter 先redis 详细见main.ts 试一下把这个消息推到redis
+
+  @SubscribeMessage('msgToServer')
+  public handleMessage(client: Socket, payload: any) {
+    return this.server.to(payload.room).emit('msgToClient', payload);
+  }
+
+  @SubscribeMessage('joinRoom')
+  public joinRoom(client: Socket, room: any): void {
+    client.join(room.room);
+    client.emit('joinedRoom', room);
+  }
+
+  @SubscribeMessage('leaveRoom')
+  public leaveRoom(client: Socket, room: any): void {
+    client.leave(room.room);
+    client.emit('leftRoom', room);
+  }
+
+  // 再看看 原生Nodejs的ws 请看 handleEvent 2.要点说明 注意 client 需要换成 原生 的ws 且注意把 transports: ['websocket'],  加上
+
+  // 纯手撸一个
 }

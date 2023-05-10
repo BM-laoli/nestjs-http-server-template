@@ -1,16 +1,25 @@
 import { IoAdapter } from '@nestjs/platform-socket.io';
 import { createAdapter } from '@socket.io/redis-adapter';
+import { ServerOptions } from 'socket.io';
 import { createClient } from 'redis';
 
-// https://socket.io/zh-CN/docs/v4/redis-adapter/ 看文档 目前 socket 发生了迁移
-const pubClient = createClient({ url: 'redis://localhost:6379' });
-const redisAdapter = createAdapter(pubClient, pubClient.duplicate());
+// 请参考最新 的v9 英文文档
 
 export class RedisIoAdapter extends IoAdapter {
-  createIOServer(port: number, options?: any): any {
-    const server = super.createIOServer(port, options);
+  private adapterConstructor: ReturnType<typeof createAdapter>;
 
-    server.adapter(redisAdapter);
+  async connectToRedis(): Promise<void> {
+    const pubClient = createClient({ url: `redis://localhost:6379` });
+    const subClient = pubClient.duplicate();
+
+    await Promise.all([pubClient.connect(), subClient.connect()]);
+
+    this.adapterConstructor = createAdapter(pubClient, subClient);
+  }
+
+  createIOServer(port: number, options?: ServerOptions): any {
+    const server = super.createIOServer(port, options);
+    server.adapter(this.adapterConstructor);
     return server;
   }
 }

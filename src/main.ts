@@ -15,31 +15,40 @@ import { WsAdapter } from '@nestjs/platform-ws';
 async function bootstrap() {
   // const app = await NestFactory.create(AppModule);
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
-    cors: true,
+    cors: {
+      origin: '*',
+      methods: ['GET', 'POST'],
+      credentials: true,
+    },
   });
-  app.use(
-    helmet({
-      contentSecurityPolicy: {
-        directives: {
-          defaultSrc: [`'self'`],
-          styleSrc: [
-            `'self'`,
-            `'unsafe-inline'`,
-            'cdn.jsdelivr.net',
-            'fonts.googleapis.com',
-          ],
-          fontSrc: [`'self'`, 'fonts.gstatic.com'],
-          imgSrc: [`'self'`, 'data:', 'cdn.jsdelivr.net'],
-          scriptSrc: [
-            `'self'`,
-            `https: 'unsafe-inline'`,
-            `cdn.jsdelivr.net`,
-            'cdn.socket.io',
-          ],
-        },
-      },
-    }),
-  );
+  // app.use(
+  //   helmet({
+  //     contentSecurityPolicy: {
+  //       directives: {
+  //         defaultSrc: [`'self'`, 'unsafe-eval'],
+  //         styleSrc: [
+  //           `'self'`,
+  //           `'unsafe-inline'`,
+  //           'cdn.jsdelivr.net',
+  //           'fonts.googleapis.com',
+  //           'maxcdn.bootstrapcdn.com',
+  //         ],
+  //         fontSrc: [`'self'`, 'fonts.gstatic.com'],
+  //         imgSrc: [`'self'`, 'data:', 'cdn.jsdelivr.net'],
+  //         scriptSrc: [
+  //           `'self'`,
+  //           `'unsafe-eval'`,
+  //           // `https: 'unsafe-inline'`,
+  //           // `cdn.jsdelivr.net`,
+  //           // 'cdn.socket.io',
+  //           'cdn.socket.io',
+  //           'cdnjs.cloudflare.com',
+  //           'cdn.jsdelivr.net',
+  //         ],
+  //       },
+  //     },
+  //   }),
+  // );
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
@@ -68,9 +77,11 @@ async function bootstrap() {
   app.setBaseViewsDir(join(__dirname, '..', 'views'));
   app.setViewEngine('hbs');
 
-  // ws adapter
-  // app.useWebSocketAdapter(new RedisIoAdapter(app));
-  app.useWebSocketAdapter(new WsAdapter(app)); // 听说这个性能比 默认的 socket 好
+  // ws adapter redis
+  const redisIoAdapter = new RedisIoAdapter(app);
+  await redisIoAdapter.connectToRedis();
+  app.useWebSocketAdapter(redisIoAdapter);
+  // app.useWebSocketAdapter(new WsAdapter(app)); // 听说这个性能比 默认的 socket 好
 
   await app.listen(3000);
 }

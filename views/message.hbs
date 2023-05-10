@@ -1,37 +1,201 @@
 <html>
   <head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+    <link rel="stylesheet" href="/static/css/message2.css">
     <script src="https://cdn.socket.io/4.3.2/socket.io.min.js" integrity="sha384-KAZ4DtjNhLChOB/hxXuKqhMLYvx3b5MlT55xPEiNmREKRzeEm+RVPlTnAn0ajQNs" crossorigin="anonymous"></script>
-    <script>
-      const socket = io('http://localhost:3000');
-      socket.on('connect', function() {
-        console.log('Connected');
-        socket.emit('events', { JoneyMessage: 'JoneyMessage--' });
-        socket.emit('identity', 0, response =>
-          console.log('Identity:', response),
-        );
-
-        socket.emit('errorTest',0)
-        // socket.emit('pipData',0)
-        socket.emit('pipData',{
-          email:'bmlishizeng@gmail.com',
-          password:"666"
-        })
-      });
-
-      socket.on('events', function(data) {
-        console.log('event', data);
-      });    
-      socket.on('pipData', function(data) {
-        console.log('pipData', data);
-      });    
-      socket.on('exception', function(data) {
-        console.log('exception', data);
-      });
-      socket.on('disconnect', function() {
-        console.log('Disconnected');
-      });
-    </script>
+    <style>
+      li {
+        list-style: none;
+      }
+    </style>
   </head>
 
-  <body></body>
+  <body>
+    <div id="app" class="container">
+    <div class="row">
+        <div class="col-md-6 offset-md-3 col-sm-12">
+            <h1 class="text-center">{{ title }}</h1>
+            <br>
+            <div id="status"></div>
+            <div id="chat">
+                <label for="username">Your Name:</label>
+                <input type="text"  id="username" class="form-control" placeholder="Enter name...">
+                <br>
+                <label for="room">Select room:</label>
+                <select class="form-control"  id="room" >
+                    <option value="general">general</option>
+                    <option value="roomA">roomA</option>
+                    <option value="roomB">roomB</option>
+                    <option value="roomC">roomC</option>
+                    <option value="roomD">roomD</option>
+                </select>
+                <br>
+                <label for="messages">Chat:</label>
+                <div class="card">
+                    <div id="messages" class="card-block">
+                        <ul id="messages-ul">
+                         
+                        </ul>
+                    </div>
+                </div>
+                <br>
+                <label for="textarea">Message:</label>
+                <textarea id="textarea" class="form-control" v-model="text" placeholder="Enter message..."></textarea>
+                <br>
+                <button id="send" class="btn">Send</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+  </body>
+   <script>
+      const test1 = () => {
+        const socket = io('http://localhost:3000');
+        socket.on('connect', function() {
+          console.log('Connected');
+          socket.emit('events', { JoneyMessage: 'JoneyMessage--' });
+          socket.emit('identity', 0, response =>
+            console.log('Identity:', response),
+          );
+
+          socket.emit('errorTest',0)
+          // socket.emit('pipData',0)
+          socket.emit('pipData',{
+            email:'bmlishizeng@gmail.com',
+            password:"666"
+          })
+        });
+
+        socket.on('events', function(data) {
+          console.log('event', data);
+        });    
+        socket.on('pipData', function(data) {
+          console.log('pipData', data);
+        });    
+        socket.on('exception', function(data) {
+          console.log('exception', data);
+        });
+        socket.on('disconnect', function() {
+          console.log('Disconnected');
+        });
+      }
+
+      const test2 = () => {
+   
+        const select =  document.querySelector('#room')
+        const textInput =  document.querySelector('#username')
+        const sendBtn =  document.querySelector('#Send')
+        const textarea =  document.querySelector('#textarea');
+
+        const ROOM = {
+          messageList:[],
+          info: { 
+          },
+          currentRoom:'general'
+        };
+
+        const renderMessageList = (message) => {
+            // 先存
+            if(message){
+              ROOM.messageList.push(message)
+            }
+            
+            // 然后渲染
+              const messageUl =  document.querySelector('#messages-ul')
+              const _html = (name,msg) => `
+                <li> 
+                  <span> ${name} : </span>
+                  <span> ${msg}</span>
+                </li>
+              `
+              let _listHtml = '';
+
+              ROOM.messageList.filter(it => it.room === select.value).forEach(item => {
+                _listHtml += _html(item.name, item.text)
+              });
+              
+              messageUl.innerHTML = _listHtml;
+          };
+
+        const main = (socket) => {
+        
+          const selectRoomHandle = (tart) => {
+            
+            if( ROOM.currentRoom ==  tart.target.value ) return;
+              socket.emit('leaveRoom', {
+                  name: textInput.value,
+                  room: ROOM.currentRoom
+              });
+              socket.emit('joinRoom', {
+                  name: textInput.value,
+                  room: tart.target.value
+                });
+            ROOM.currentRoom=tart.target.value;
+          };
+
+          const sendHandle = () => {
+              const message = {
+                name: textInput.value,
+                text: textarea.value,
+                room: select.value,
+              };
+              socket.emit('msgToServer', message);
+              textarea.value= '';
+          };
+        
+          select.addEventListener('change', selectRoomHandle);
+          sendBtn.addEventListener('click', sendHandle);
+        }
+
+        const socket = io('ws://localhost:3000', {
+              transports: [ "websocket" ],
+                withCredentials: true
+            });
+
+        socket.on('msgToClient', (message) => {
+            console.log('msgToClient', message);
+            renderMessageList(message)
+        });
+
+        socket.on('connect', () => {
+            console.log('connect->',)
+            main(socket)
+        });
+      
+        socket.on('disconnect', function() {
+          console.log('joinedRoom->',room)
+        });
+
+        socket.on('joinedRoom', (room) => {
+          console.log('joinedRoom->',room)
+        });
+
+        socket.on('leftRoom', (room) => {
+              console.log('leftRoom->',room)
+        });
+
+      }
+
+      const test3 = () => {
+        const ws = new WebSocket('ws://localhost:3000');
+        // Connection opened
+        ws.addEventListener('open', function (event) {
+            ws.send(JSON.stringify({
+              event:"events",
+              data:{
+                text:6
+              }
+            }));
+        });
+
+        // Listen for messages
+        ws.addEventListener('message', function (event) {
+            console.log(event)
+        });
+      }
+
+
+test2()
+    </script>
 </html>
