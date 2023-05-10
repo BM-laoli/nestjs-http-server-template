@@ -33,4 +33,10 @@ export class PageController {
       message: 'Hello world!',
     };
   }
+
+  @Get('message')
+  @Render('message')
+  renderMessage() {
+    return {};
+  }
 }

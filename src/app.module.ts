@@ -13,6 +13,7 @@ import { FileModule } from './modules/fileTest/file.module';
 import { CookieSessionModule } from './modules/cookieSessionTest/cookieSession.module';
 import { PageModule } from './modules/pages/page.module';
 import { CASLModule } from './modules/casl/casl.module';
+import { EventModule } from './modules/webSocket/events.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { CASLModule } from './modules/casl/casl.module';
     CookieSessionModule,
     PageModule,
     CASLModule,
+    EventModule,
   ],
   controllers: [AppController],
   providers: [AppService],

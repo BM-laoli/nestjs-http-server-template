@@ -9,13 +9,37 @@ import {
 } from './modules/cookieSessionTest/cookieSession.controller';
 import * as session from 'express-session';
 import helmet from 'helmet';
-
 import { join } from 'path';
-
+import { RedisIoAdapter } from './modules/webSocket/adapter/redistIO.adapter';
+import { WsAdapter } from '@nestjs/platform-ws';
 async function bootstrap() {
   // const app = await NestFactory.create(AppModule);
-  const app = await NestFactory.create<NestExpressApplication>(AppModule);
-  app.use(helmet());
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, {
+    cors: true,
+  });
+  app.use(
+    helmet({
+      contentSecurityPolicy: {
+        directives: {
+          defaultSrc: [`'self'`],
+          styleSrc: [
+            `'self'`,
+            `'unsafe-inline'`,
+            'cdn.jsdelivr.net',
+            'fonts.googleapis.com',
+          ],
+          fontSrc: [`'self'`, 'fonts.gstatic.com'],
+          imgSrc: [`'self'`, 'data:', 'cdn.jsdelivr.net'],
+          scriptSrc: [
+            `'self'`,
+            `https: 'unsafe-inline'`,
+            `cdn.jsdelivr.net`,
+            'cdn.socket.io',
+          ],
+        },
+      },
+    }),
+  );
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
@@ -43,6 +67,10 @@ async function bootstrap() {
   });
   app.setBaseViewsDir(join(__dirname, '..', 'views'));
   app.setViewEngine('hbs');
+
+  // ws adapter
+  // app.useWebSocketAdapter(new RedisIoAdapter(app));
+  app.useWebSocketAdapter(new WsAdapter(app)); // 听说这个性能比 默认的 socket 好
 
   await app.listen(3000);
 }
