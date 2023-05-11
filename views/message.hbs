@@ -1,7 +1,10 @@
 <html>
   <head>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
-    <link rel="stylesheet" href="/static/css/message2.css">
+    <!-- CSS -->
+    {{!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous"> --}}
+    <link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/4.6.2/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
+
+    <link rel="stylesheet" href="/static/css/message.css">
     <script src="https://cdn.socket.io/4.3.2/socket.io.min.js" integrity="sha384-KAZ4DtjNhLChOB/hxXuKqhMLYvx3b5MlT55xPEiNmREKRzeEm+RVPlTnAn0ajQNs" crossorigin="anonymous"></script>
     <style>
       li {
@@ -51,7 +54,7 @@
   </body>
    <script>
       const test1 = () => {
-        const socket = io('http://localhost:3000');
+        const socket = io('http://127.0.0.1:3000');
         socket.on('connect', function() {
           console.log('Connected');
           socket.emit('events', { JoneyMessage: 'JoneyMessage--' });
@@ -148,7 +151,7 @@
           sendBtn.addEventListener('click', sendHandle);
         }
 
-        const socket = io('ws://localhost:3000', {
+        const socket = io('ws://127.0.0.1:3002', {
               transports: [ "websocket" ],
                 withCredentials: true
             });
@@ -178,7 +181,7 @@
       }
 
       const test3 = () => {
-        const ws = new WebSocket('ws://localhost:3000');
+        const ws = new WebSocket('ws://127.0.0.1:3000');
         // Connection opened
         ws.addEventListener('open', function (event) {
             ws.send(JSON.stringify({
@@ -195,7 +198,24 @@
         });
       }
 
-
-test2()
+      const test4 = () => {
+         const socket = new WebSocket('ws://localhost:3001');
+          socket.onopen = function() {
+            console.log('Connected');
+            socket.send(
+              JSON.stringify({
+                event: 'myAdapter',
+                data: 'test',
+              }),
+            );
+            socket.onmessage = function(data) {
+              console.log(data);
+            };
+          };
+      }
+      // test1()
+      // test2()
+      // test3()
+       test4()
     </script>
 </html>

@@ -17,14 +17,15 @@ import { AllExceptionsFilterWithWs } from './filter/allExceptions.filter';
 import { TestDto } from './dto/test.dto';
 
 // 默认可以WebSocketGateway(80,options) 这个port 可指定若不指定就是 同样的port 监听
-@WebSocketGateway({
-  transports: ['websocket'],
-  cors: {
-    origin: '*',
-    methods: ['GET', 'POST'],
-    credentials: true,
-  },
-})
+// @WebSocketGateway({
+//   transports: ['websocket'],
+//   cors: {
+//     origin: '*',
+//     methods: ['GET', 'POST'],
+//     credentials: true,
+//   },
+// })
+@WebSocketGateway(3001)
 export class EventsGateway {
   // 直接访问原生的、特定于平台的服务器实例
   @WebSocketServer()
@@ -96,23 +97,28 @@ export class EventsGateway {
   // 适配器adapter 先redis 详细见main.ts 试一下把这个消息推到redis
 
   @SubscribeMessage('msgToServer')
-  public handleMessage(client: Socket, payload: any) {
+  handleMessage(client: Socket, payload: any) {
     return this.server.to(payload.room).emit('msgToClient', payload);
   }
 
   @SubscribeMessage('joinRoom')
-  public joinRoom(client: Socket, room: any): void {
+  joinRoom(client: Socket, room: any): void {
     client.join(room.room);
     client.emit('joinedRoom', room);
   }
 
   @SubscribeMessage('leaveRoom')
-  public leaveRoom(client: Socket, room: any): void {
+  leaveRoom(client: Socket, room: any): void {
     client.leave(room.room);
     client.emit('leftRoom', room);
   }
 
   // 再看看 原生Nodejs的ws 请看 handleEvent 2.要点说明 注意 client 需要换成 原生 的ws 且注意把 transports: ['websocket'],  加上
 
-  // 纯手撸一个
+  // 纯手撸一个 adapter
+  @SubscribeMessage('myAdapter')
+  myAdapter(@MessageBody() data: any, @ConnectedSocket() client: Socket) {
+    log('data', data);
+    client.send('myAdapter', '7777777');
+  }
 }

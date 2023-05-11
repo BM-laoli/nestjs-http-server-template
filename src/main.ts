@@ -1,7 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { AppModule } from './app.module';
-import { ValidationPipe } from '@nestjs/common';
+import { Logger, ValidationPipe } from '@nestjs/common';
 import * as cookieParser from 'cookie-parser';
 import {
   cookieSecret,
@@ -12,6 +12,9 @@ import helmet from 'helmet';
 import { join } from 'path';
 import { RedisIoAdapter } from './modules/webSocket/adapter/redistIO.adapter';
 import { WsAdapter } from '@nestjs/platform-ws';
+import { ConfigService } from '@nestjs/config';
+import { log } from 'console';
+import { MyWsAdapter } from './modules/webSocket/adapter/myWsAdapter.adapter';
 async function bootstrap() {
   // const app = await NestFactory.create(AppModule);
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
@@ -77,13 +80,15 @@ async function bootstrap() {
   app.setBaseViewsDir(join(__dirname, '..', 'views'));
   app.setViewEngine('hbs');
 
+  const configService = app.get(ConfigService) as ConfigService;
   // ws adapter redis
-  const redisIoAdapter = new RedisIoAdapter(app);
-  await redisIoAdapter.connectToRedis();
-  app.useWebSocketAdapter(redisIoAdapter);
+  // const redisIoAdapter = new RedisIoAdapter(app);
+  // await redisIoAdapter.connectToRedis(configService);
+  // app.useWebSocketAdapter(redisIoAdapter);
   // app.useWebSocketAdapter(new WsAdapter(app)); // 听说这个性能比 默认的 socket 好
+  app.useWebSocketAdapter(new MyWsAdapter(app)); // 听说这个性能比 默认的 socket 好
 
-  await app.listen(3000);
+  await app.listen(configService.get<string>('PROT'));
 }
 
 bootstrap();
