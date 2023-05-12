@@ -88,7 +88,8 @@ async function bootstrap() {
   // app.useWebSocketAdapter(new WsAdapter(app)); // 听说这个性能比 默认的 socket 好
   app.useWebSocketAdapter(new MyWsAdapter(app)); // 听说这个性能比 默认的 socket 好
 
-  await app.listen(configService.get<string>('PROT'));
+  // await app.listen(configService.get<string>('PROT'));
+  await app.listen(3000);
 }
 
 bootstrap();

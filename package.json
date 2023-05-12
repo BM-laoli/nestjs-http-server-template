@@ -1,7 +1,7 @@
 {
   "name": "nestjs-http-server-template",
   "version": "0.0.1",
-  "description": "",
+  "description": "> > 这里是 NestJs 从零开始 ，为了更好的阅读体验 请移步 <a href=\"https://juejin.cn/column/7179578893353877565\"> 掘金社区专栏</a> > 最后 各位大佬 点赞啊 手留余香 ，小弟十分感谢🙏",
   "author": "",
   "private": true,
   "license": "UNLICENSED",
@@ -51,6 +51,7 @@
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^7.2.0",
+    "socket.io": "^4.6.1",
     "ws": "^8.13.0"
   },
   "devDependencies": {
@@ -93,5 +94,19 @@
     ],
     "coverageDirectory": "../coverage",
     "testEnvironment": "node"
-  }
+  },
+  "main": ".eslintrc.js",
+  "directories": {
+    "doc": "doc",
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BM-laoli/nestjs-http-server-template.git"
+  },
+  "keywords": [],
+  "bugs": {
+    "url": "https://github.com/BM-laoli/nestjs-http-server-template/issues"
+  },
+  "homepage": "https://github.com/BM-laoli/nestjs-http-server-template#readme"
 }
