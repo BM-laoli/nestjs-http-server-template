@@ -10,10 +10,9 @@ import { AppService } from './app.service';
     ClientsModule.register([
       {
         name: 'M1_SERVICE',
-        transport: Transport.MQTT,
+        transport: Transport.NATS,
         options: {
-          url: 'mqtt://localhost:1883',
-          protocolVersion: 5,
+          servers: ['nats://localhost:4222'],
         },
       },
     ]),

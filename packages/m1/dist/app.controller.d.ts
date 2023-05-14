@@ -14,4 +14,6 @@ export declare class AppController {
     getNotifications(data: number[], context: RedisContext): void;
     getNotificationsMQTT(data: number[], context: MqttContext): void;
     replaceEmoji(data: string, context: MqttContext): string;
+    notificationsNATS(data: number[], context: NatsContext): void;
+    replaceEmojiNATS(data: string, context: NatsContext): string;
 }

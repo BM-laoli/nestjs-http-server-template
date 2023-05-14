@@ -55,6 +55,13 @@ let AppController = class AppController {
         console.log('2');
         return userProperties['x-version'] === '1.0.0' ? '🐱' : '🐈';
     }
+    notificationsNATS(data, context) {
+        console.log(`Subject: ${context.getSubject()}`);
+    }
+    replaceEmojiNATS(data, context) {
+        const headers = context.getHeaders();
+        return headers.get('x-version') === '1.0.0' ? '🐱' : '🐈';
+    }
 };
 __decorate([
     (0, microservices_1.MessagePattern)({ cmd: 'sum' }),
@@ -118,6 +125,22 @@ __decorate([
     __metadata("design:paramtypes", [String, microservices_1.MqttContext]),
     __metadata("design:returntype", String)
 ], AppController.prototype, "replaceEmoji", null);
+__decorate([
+    (0, microservices_1.MessagePattern)('notificationsNATS'),
+    __param(0, (0, microservices_1.Payload)()),
+    __param(1, (0, microservices_1.Ctx)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Array, microservices_1.NatsContext]),
+    __metadata("design:returntype", void 0)
+], AppController.prototype, "notificationsNATS", null);
+__decorate([
+    (0, microservices_1.MessagePattern)('replace-emoji-NATS'),
+    __param(0, (0, microservices_1.Payload)()),
+    __param(1, (0, microservices_1.Ctx)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, microservices_1.NatsContext]),
+    __metadata("design:returntype", String)
+], AppController.prototype, "replaceEmojiNATS", null);
 AppController = __decorate([
     (0, common_1.Controller)({
         scope: common_1.Scope.REQUEST,

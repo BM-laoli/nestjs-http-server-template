@@ -7,10 +7,14 @@ import {
   Res,
   Scope,
 } from '@nestjs/common';
-import { ClientProxy, MqttRecordBuilder } from '@nestjs/microservices';
+import {
+  ClientProxy,
+  MqttRecordBuilder,
+  NatsRecordBuilder,
+} from '@nestjs/microservices';
 import { Response } from 'express';
 import { lastValueFrom, of } from 'rxjs';
-
+import * as nats from 'nats';
 @Controller('m1')
 export class AppController {
   constructor(@Inject('M1_SERVICE') private M1_client: ClientProxy) {}
@@ -29,9 +33,10 @@ export class AppController {
     // return this.publish2();
     // return this.publishToRedis();
     // this.publishToMQTT();
-    this.publishToMQTT().subscribe((it) => {
-      console.log(it);
-    });
+    // this.publishToMQTT().subscribe((it) => {
+    //   console.log(it);
+    // });
+    this.publishToNAST();
     return 0;
   }
 
@@ -91,5 +96,21 @@ export class AppController {
     console.log(record);
 
     return this.M1_client.send('replace-emoji', record);
+  }
+
+  // NAST
+  publishToNAST() {
+    // this.M1_client.emit<number>('notificationsNATS', {
+    //   name: 6666,
+    // });
+
+    // 配置 消息选项
+    const headers = nats.headers();
+    headers.set('x-version', '1.0.0');
+    const record = new NatsRecordBuilder(':cat:').setHeaders(headers).build();
+
+    this.M1_client.send('replace-emoji-NATS', record).subscribe((it) => {
+      console.log(it);
+    });
   }
 }

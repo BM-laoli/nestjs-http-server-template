@@ -48,6 +48,7 @@ importers:
       jest: ^27.0.6
       mongoose: ^7.1.0
       mqtt: ^4.3.7
+      nats: ^2.13.1
       prettier: ^2.3.2
       redis: ^4.6.6
       reflect-metadata: ^0.1.13
@@ -68,7 +69,7 @@ importers:
       '@nestjs/common': 9.4.0_gt4al5nogvolxne5b4fhxovupm
       '@nestjs/config': 2.3.1_4k3epc74gc2u2qkv5yznawsx6m
       '@nestjs/core': 9.4.0_omgjhstz3a63tqhovbeijw5y4i
-      '@nestjs/microservices': 9.4.0_z225muilhxttigpoywhouzilju
+      '@nestjs/microservices': 9.4.0_o6y2d2rimzv3saugn5qnvrfpve
       '@nestjs/mongoose': 9.2.2_g6rxkqcwlfjdbfl3upzjueqtii
       '@nestjs/platform-express': 9.4.0_gqkob5jndcfeb3wjw72wbdwyne
       '@nestjs/platform-fastify': 9.4.0_gqkob5jndcfeb3wjw72wbdwyne
@@ -91,6 +92,7 @@ importers:
       ioredis: 5.3.2
       mongoose: 7.1.1
       mqtt: 4.3.7
+      nats: 2.13.1
       redis: 4.6.6
       reflect-metadata: 0.1.13
       rimraf: 3.0.2
@@ -1568,7 +1570,7 @@ packages:
         optional: true
     dependencies:
       '@nestjs/common': 9.4.0_gt4al5nogvolxne5b4fhxovupm
-      '@nestjs/microservices': 9.4.0_z225muilhxttigpoywhouzilju
+      '@nestjs/microservices': 9.4.0_o6y2d2rimzv3saugn5qnvrfpve
       '@nestjs/platform-express': 9.4.0_gqkob5jndcfeb3wjw72wbdwyne
       '@nestjs/websockets': 9.4.0_ggeeefoaikzeeumvsdpwelb65u
       '@nuxtjs/opencollective': 0.3.2
@@ -1613,7 +1615,7 @@ packages:
     transitivePeerDependencies:
       - encoding
 
-  /@nestjs/microservices/9.4.0_z225muilhxttigpoywhouzilju:
+  /@nestjs/microservices/9.4.0_o6y2d2rimzv3saugn5qnvrfpve:
     resolution: {integrity: sha512-3IlURTijN2whedrfnLbJ3QQ4giDU1SxXcepXxtUL1MMkZAJgw2gN7sTquOXVgy/Ci5OMPO+vOjVyadjFejrgKA==}
     peerDependencies:
       '@grpc/grpc-js': '*'
@@ -1656,6 +1658,7 @@ packages:
       ioredis: 5.3.2
       iterare: 1.2.1
       mqtt: 4.3.7
+      nats: 2.13.1
       reflect-metadata: 0.1.13
       rxjs: 7.8.1
       tslib: 2.5.0
@@ -1814,7 +1817,7 @@ packages:
     dependencies:
       '@nestjs/common': 9.4.0_gt4al5nogvolxne5b4fhxovupm
       '@nestjs/core': 9.4.0_omgjhstz3a63tqhovbeijw5y4i
-      '@nestjs/microservices': 9.4.0_z225muilhxttigpoywhouzilju
+      '@nestjs/microservices': 9.4.0_o6y2d2rimzv3saugn5qnvrfpve
       '@nestjs/platform-express': 9.4.0_gqkob5jndcfeb3wjw72wbdwyne
       tslib: 2.5.0
     dev: true
@@ -6197,6 +6200,12 @@ packages:
     resolution: {integrity: sha512-nnbWWOkoWyUsTjKrhgD0dcz22mdkSnpYqbEjIm2nhwhuxlSkpywJmBo8h0ZqJdkp73mb90SssHkN4rsRaBAfAA==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npm.taobao.org/mute-stream/-/mute-stream-0.0.8.tgz}
     dev: true
 
+  /nats/2.13.1:
+    resolution: {integrity: sha512-lHV/DQREZVHXtavlAI5fFA7XDyN2/LNBtnNX76mPQV9BIKpTehzYrD1Hw7t/1mV4AGdrJj6U60JkQ8AMrVc6Mg==}
+    engines: {node: '>= 14.0.0'}
+    dependencies:
+      nkeys.js: 1.0.5
+
   /natural-compare-lite/1.4.0:
     resolution: {integrity: sha512-Tj+HTDSJJKaZnfiuw+iaF9skdPpTo2GtEly5JHnWV/hfv2Qj/9RKsGISQtLh2ox3l5EAGw487hnBee0sIJ6v2g==}
     dev: true
@@ -6211,6 +6220,12 @@ packages:
 
   /neo-async/2.6.2:
     resolution: {integrity: sha512-Yd3UES5mWCSqR+qNT93S3UoYUkqAZ9lLg8a7g9rimsWmYGK8cVToA4/sF3RrshdyV3sAGMXVUmpMYOw+dLpOuw==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npm.taobao.org/neo-async/-/neo-async-2.6.2.tgz}
+
+  /nkeys.js/1.0.5:
+    resolution: {integrity: sha512-u25YnRPHiGVsNzwyHnn+PT90sgAhnS8jUJ1nxmkHMFYCJ6+Ic0lv291w7uhRBpJVJ3PH2GWbYqA151lGCRrB5g==}
+    engines: {node: '>=10.0.0'}
+    dependencies:
+      tweetnacl: 1.0.3
 
   /node-abort-controller/3.1.1:
     resolution: {integrity: sha512-AGK2yQKIjRuqnc6VkX2Xj5d+QW8xZ87pa1UK6yA6ouUyuxfHuMP6umE5QK7UmTeOAymo+Zx1Fxiuw9rVx8taHQ==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npm.taobao.org/node-abort-controller/-/node-abort-controller-3.1.1.tgz}
@@ -7611,6 +7626,9 @@ packages:
       tslib: 1.14.1
       typescript: 4.9.5
     dev: true
+
+  /tweetnacl/1.0.3:
+    resolution: {integrity: sha512-6rt+RN7aOi1nGMyC4Xa5DdYiukl2UWCbcJft7YhxReBGQD7OAM8Pbxw6YMo4r2diNEA8FEmu32YOn9rhaiE5yw==}
 
   /type-check/0.3.2:
     resolution: {integrity: sha512-ZCmOJdvOWDBYJlzAoFkC+Q0+bUyEOS1ltgp1MGU03fqHG+dbi9tBFU2Rd9QKiDZFAYrhPh2JUf7rZRIuHRKtOg==}

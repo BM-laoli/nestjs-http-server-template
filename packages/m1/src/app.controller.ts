@@ -94,4 +94,21 @@ export class AppController {
 
     return userProperties['x-version'] === '1.0.0' ? '🐱' : '🐈';
   }
+
+  // NTAS
+  @MessagePattern('notificationsNATS')
+  notificationsNATS(@Payload() data: number[], @Ctx() context: NatsContext) {
+    console.log(`Subject: ${context.getSubject()}`);
+  }
+
+  // NATS 可以设置 标头
+  @MessagePattern('replace-emoji-NATS')
+  replaceEmojiNATS(
+    @Payload() data: string,
+    @Ctx() context: NatsContext,
+  ): string {
+    const headers = context.getHeaders();
+    // 这个返回时一个是get 不要相信官方给写的 headers['x-version']
+    return headers.get('x-version') === '1.0.0' ? '🐱' : '🐈';
+  }
 }
