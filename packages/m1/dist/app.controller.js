@@ -62,6 +62,18 @@ let AppController = class AppController {
         const headers = context.getHeaders();
         return headers.get('x-version') === '1.0.0' ? '🐱' : '🐈';
     }
+    getNotificationsRMQ(data, context) {
+        console.log(`Pattern: ${context.getPattern()}`);
+        console.log(`Pattern: ${context.getMessage()}`);
+        console.log(context.getChannelRef());
+        console.log(data);
+        context.getChannelRef().ack(context.getMessage());
+        return '666';
+    }
+    replaceEmojiRMQ(data, context) {
+        const { properties: { headers }, } = context.getMessage();
+        return headers['x-version'] === '1.0.0' ? '🐱' : '🐈';
+    }
 };
 __decorate([
     (0, microservices_1.MessagePattern)({ cmd: 'sum' }),
@@ -141,6 +153,22 @@ __decorate([
     __metadata("design:paramtypes", [String, microservices_1.NatsContext]),
     __metadata("design:returntype", String)
 ], AppController.prototype, "replaceEmojiNATS", null);
+__decorate([
+    (0, microservices_1.MessagePattern)('notificationsRMQ'),
+    __param(0, (0, microservices_1.Payload)()),
+    __param(1, (0, microservices_1.Ctx)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Array, microservices_1.RmqContext]),
+    __metadata("design:returntype", void 0)
+], AppController.prototype, "getNotificationsRMQ", null);
+__decorate([
+    (0, microservices_1.MessagePattern)('replace-emoji-RMQ'),
+    __param(0, (0, microservices_1.Payload)()),
+    __param(1, (0, microservices_1.Ctx)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, microservices_1.RmqContext]),
+    __metadata("design:returntype", String)
+], AppController.prototype, "replaceEmojiRMQ", null);
 AppController = __decorate([
     (0, common_1.Controller)({
         scope: common_1.Scope.REQUEST,

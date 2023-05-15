@@ -15,6 +15,7 @@ import {
   Payload,
   RedisContext,
   RequestContext,
+  RmqContext,
 } from '@nestjs/microservices';
 import { from, fromEvent, Observable } from 'rxjs';
 import { AppService } from './app.service';
@@ -110,5 +111,28 @@ export class AppController {
     const headers = context.getHeaders();
     // 这个返回时一个是get 不要相信官方给写的 headers['x-version']
     return headers.get('x-version') === '1.0.0' ? '🐱' : '🐈';
+  }
+
+  // RMQ
+  @MessagePattern('notificationsRMQ')
+  getNotificationsRMQ(@Payload() data: number[], @Ctx() context: RmqContext) {
+    console.log(`Pattern: ${context.getPattern()}`);
+    console.log(`Pattern: ${context.getMessage()}`); // 获取原始数据
+    // 要检索对 RabbitMQ 通道的引用 请参考
+    console.log(context.getChannelRef());
+    console.log(data);
+
+    // 如果 我们设置了 noAck: false,需要 手动的check一下
+    context.getChannelRef().ack(context.getMessage());
+    return '666';
+  }
+
+  // RMQ 同样的也支持 设置头信息等操作
+  @MessagePattern('replace-emoji-RMQ')
+  replaceEmojiRMQ(@Payload() data: string, @Ctx() context: RmqContext): string {
+    const {
+      properties: { headers },
+    } = context.getMessage();
+    return headers['x-version'] === '1.0.0' ? '🐱' : '🐈';
   }
 }

@@ -1,4 +1,4 @@
-import { MqttContext, NatsContext, RedisContext, RequestContext } from '@nestjs/microservices';
+import { MqttContext, NatsContext, RedisContext, RequestContext, RmqContext } from '@nestjs/microservices';
 import { Observable } from 'rxjs';
 import { AppService } from './app.service';
 export declare class AppController {
@@ -16,4 +16,6 @@ export declare class AppController {
     replaceEmoji(data: string, context: MqttContext): string;
     notificationsNATS(data: number[], context: NatsContext): void;
     replaceEmojiNATS(data: string, context: NatsContext): string;
+    getNotificationsRMQ(data: number[], context: RmqContext): string;
+    replaceEmojiRMQ(data: string, context: RmqContext): string;
 }

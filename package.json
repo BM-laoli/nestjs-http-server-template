@@ -36,6 +36,8 @@
     "@nestjs/websockets": "^9.4.0",
     "@socket.io/redis-adapter": "^8.2.0",
     "@types/express-session": "^1.17.7",
+    "amqp-connection-manager": "^4.1.13",
+    "amqplib": "^0.10.3",
     "axios": "^1.4.0",
     "bull": "^4.10.4",
     "cache-manager": "4.1.0",

@@ -11,6 +11,7 @@ import {
   ClientProxy,
   MqttRecordBuilder,
   NatsRecordBuilder,
+  RmqRecordBuilder,
 } from '@nestjs/microservices';
 import { Response } from 'express';
 import { lastValueFrom, of } from 'rxjs';
@@ -36,7 +37,8 @@ export class AppController {
     // this.publishToMQTT().subscribe((it) => {
     //   console.log(it);
     // });
-    this.publishToNAST();
+    // this.publishToNAST();
+    this.publishToRMQ();
     return 0;
   }
 
@@ -112,5 +114,27 @@ export class AppController {
     this.M1_client.send('replace-emoji-NATS', record).subscribe((it) => {
       console.log(it);
     });
+  }
+
+  // RMQ
+  publishToRMQ() {
+    this.M1_client.send('notificationsRMQ', {
+      name: 'RMQ',
+    }).subscribe((it) => {
+      console.log(it);
+    });
+    // const message = ':cat:';
+    // const record = new RmqRecordBuilder(message)
+    //   .setOptions({
+    //     headers: {
+    //       ['x-version']: '1.0.0',
+    //     },
+    //     priority: 3,
+    //   })
+    //   .build();
+
+    // this.M1_client.send('replace-emoji-RMQ', record).subscribe((it) => {
+    //   console.log(it);
+    // });
   }
 }

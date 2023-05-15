@@ -10,9 +10,14 @@ import { AppService } from './app.service';
     ClientsModule.register([
       {
         name: 'M1_SERVICE',
-        transport: Transport.NATS,
+        transport: Transport.RMQ,
         options: {
-          servers: ['nats://localhost:4222'],
+          urls: ['amqp://localhost:5672'],
+          queue: 'cats_queue',
+          noAck: false,
+          queueOptions: {
+            durable: false,
+          },
         },
       },
     ]),
