@@ -12,13 +12,18 @@ import {
   MqttRecordBuilder,
   NatsRecordBuilder,
   RmqRecordBuilder,
+  ClientKafka,
 } from '@nestjs/microservices';
 import { Response } from 'express';
 import { lastValueFrom, of } from 'rxjs';
 import * as nats from 'nats';
+import { KafkaService } from './kafka.service';
 @Controller('m1')
 export class AppController {
-  constructor(@Inject('M1_SERVICE') private M1_client: ClientProxy) {}
+  constructor(
+    private readonly kafkaService: KafkaService,
+    @Inject('M1_SERVICE') private M1_client: ClientKafka,
+  ) {}
 
   @Get()
   // t1(@Res() res: Response) {
@@ -38,7 +43,8 @@ export class AppController {
     //   console.log(it);
     // });
     // this.publishToNAST();
-    this.publishToRMQ();
+    // this.publishToRMQ();
+    this.publicToKafka();
     return 0;
   }
 
@@ -136,5 +142,11 @@ export class AppController {
     // this.M1_client.send('replace-emoji-RMQ', record).subscribe((it) => {
     //   console.log(it);
     // });
+  }
+
+  // Kafka
+  async publicToKafka() {
+    const value = await this.kafkaService.killDragon();
+    console.log(value);
   }
 }

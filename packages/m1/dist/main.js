@@ -3,16 +3,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const core_1 = require("@nestjs/core");
 const app_module_1 = require("./app.module");
 const microservices_1 = require("@nestjs/microservices");
+const path_1 = require("path");
 async function bootstrap() {
     const app = await core_1.NestFactory.createMicroservice(app_module_1.AppModule, {
-        transport: microservices_1.Transport.RMQ,
+        transport: microservices_1.Transport.GRPC,
         options: {
-            urls: ['amqp://localhost:5672'],
-            queue: 'cats_queue',
-            noAck: false,
-            queueOptions: {
-                durable: false,
-            },
+            package: 'hero',
+            protoPath: (0, path_1.join)(__dirname, './hero/hero.proto'),
         },
     });
     await app.listen();

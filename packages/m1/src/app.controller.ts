@@ -2,6 +2,7 @@ import {
   Controller,
   Get,
   Inject,
+  Logger,
   RequestTimeoutException,
   Scope,
 } from '@nestjs/common';
@@ -19,6 +20,16 @@ import {
 } from '@nestjs/microservices';
 import { from, fromEvent, Observable } from 'rxjs';
 import { AppService } from './app.service';
+import * as util from 'util';
+import { KafkaMessage } from 'kafkajs';
+interface Dragon {
+  id: number;
+  name: string;
+}
+
+type KillDragonMessage = Omit<KafkaMessage, 'value'> & {
+  value: Pick<Dragon, 'id'>;
+};
 
 @Controller({
   scope: Scope.REQUEST,
@@ -28,6 +39,13 @@ export class AppController {
     private readonly appService: AppService,
     @Inject(CONTEXT) private ctx: RequestContext, // scope 的时候
   ) {}
+
+  private readonly logger = new Logger(AppController.name);
+  private readonly dragons = [
+    { id: 1, name: 'Smaug' },
+    { id: 2, name: 'Ancalagon The Black' },
+    { id: 3, name: 'Glaurung' },
+  ];
 
   // 在Nest中有两种 微服务的模式来识别消息和事件
 
@@ -134,5 +152,26 @@ export class AppController {
       properties: { headers },
     } = context.getMessage();
     return headers['x-version'] === '1.0.0' ? '🐱' : '🐈';
+  }
+
+  @MessagePattern('hero.kill.dragon')
+  onKillDragon(@Payload() message: KillDragonMessage) {
+    this.logger.log(`[hero.kill.dragon] message = ${util.inspect(message)}`);
+
+    const dragonId = message?.value?.id ?? null;
+    if (!dragonId) {
+      this.logger.error('Failed to determine Dragon ID');
+      return;
+    }
+
+    const dragon = this.dragons.find(({ id }) => id === dragonId);
+    if (!dragon) {
+      this.logger.error('Failed to fetch dragon from the database!');
+      return;
+    }
+
+    this.logger.log(`Hero killed ${dragon.name}!`);
+
+    return dragon;
   }
 }

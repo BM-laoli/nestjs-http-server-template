@@ -11,16 +11,24 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
+var AppController_1;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AppController = void 0;
 const common_1 = require("@nestjs/common");
 const microservices_1 = require("@nestjs/microservices");
 const rxjs_1 = require("rxjs");
 const app_service_1 = require("./app.service");
-let AppController = class AppController {
+const util = require("util");
+let AppController = AppController_1 = class AppController {
     constructor(appService, ctx) {
         this.appService = appService;
         this.ctx = ctx;
+        this.logger = new common_1.Logger(AppController_1.name);
+        this.dragons = [
+            { id: 1, name: 'Smaug' },
+            { id: 2, name: 'Ancalagon The Black' },
+            { id: 3, name: 'Glaurung' },
+        ];
     }
     accumulate(data) {
         return (data || []).reduce((a, b) => a + b);
@@ -73,6 +81,22 @@ let AppController = class AppController {
     replaceEmojiRMQ(data, context) {
         const { properties: { headers }, } = context.getMessage();
         return headers['x-version'] === '1.0.0' ? '🐱' : '🐈';
+    }
+    onKillDragon(message) {
+        var _a, _b;
+        this.logger.log(`[hero.kill.dragon] message = ${util.inspect(message)}`);
+        const dragonId = (_b = (_a = message === null || message === void 0 ? void 0 : message.value) === null || _a === void 0 ? void 0 : _a.id) !== null && _b !== void 0 ? _b : null;
+        if (!dragonId) {
+            this.logger.error('Failed to determine Dragon ID');
+            return;
+        }
+        const dragon = this.dragons.find(({ id }) => id === dragonId);
+        if (!dragon) {
+            this.logger.error('Failed to fetch dragon from the database!');
+            return;
+        }
+        this.logger.log(`Hero killed ${dragon.name}!`);
+        return dragon;
     }
 };
 __decorate([
@@ -169,7 +193,14 @@ __decorate([
     __metadata("design:paramtypes", [String, microservices_1.RmqContext]),
     __metadata("design:returntype", String)
 ], AppController.prototype, "replaceEmojiRMQ", null);
-AppController = __decorate([
+__decorate([
+    (0, microservices_1.MessagePattern)('hero.kill.dragon'),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], AppController.prototype, "onKillDragon", null);
+AppController = AppController_1 = __decorate([
     (0, common_1.Controller)({
         scope: common_1.Scope.REQUEST,
     }),

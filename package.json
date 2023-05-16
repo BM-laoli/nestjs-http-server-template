@@ -22,6 +22,8 @@
   },
   "dependencies": {
     "@casl/ability": "^6.5.0",
+    "@grpc/grpc-js": "^1.8.14",
+    "@grpc/proto-loader": "^0.7.7",
     "@nestjs/axios": "^2.0.0",
     "@nestjs/bull": "^0.6.3",
     "@nestjs/common": "^9.0.0",
@@ -50,6 +52,7 @@
     "hbs": "^4.2.0",
     "helmet": "^7.0.0",
     "ioredis": "^5.3.2",
+    "kafkajs": "^2.2.4",
     "mongoose": "^7.1.0",
     "mqtt": "^4.3.7",
     "nats": "^2.13.1",
