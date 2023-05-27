@@ -1,4 +1,56 @@
 {
   "collection": "@nestjs/schematics",
-  "sourceRoot": "src"
+  "sourceRoot": "apps/nestjs-http-server-template/src",
+  "monorepo": true,
+  "root": "apps/nestjs-http-server-template",
+  "compilerOptions": {
+    "webpack": true,
+    "tsConfigPath": "apps/nestjs-http-server-template/tsconfig.app.json"
+  },
+  "projects": {
+    "nestjs-http-server-template": {
+      "type": "application",
+      "root": "apps/nestjs-http-server-template",
+      "entryFile": "main",
+      "sourceRoot": "apps/nestjs-http-server-template/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/nestjs-http-server-template/tsconfig.app.json"
+      }
+    },
+    "app1": {
+      "type": "application",
+      "root": "apps/app1",
+      "entryFile": "main",
+      "sourceRoot": "apps/app1/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/app1/tsconfig.app.json"
+      }
+    },
+    "app2": {
+      "type": "application",
+      "root": "apps/app2",
+      "entryFile": "main",
+      "sourceRoot": "apps/app2/src",
+      "compilerOptions": {
+        "webpack":false,
+        "tsConfigPath": "apps/app2/tsconfig.app.json",
+        "assets": [
+          {
+            "include": "static/**/*",
+            "outDir": "./doc/",
+            "watchAssets": true
+          }
+        ]
+      }
+    },
+    "app": {
+      "type": "library",
+      "root": "libs/app",
+      "entryFile": "index",
+      "sourceRoot": "libs/app/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/app/tsconfig.lib.json"
+      }
+    }
+  }
 }
